@@ -144,11 +144,13 @@ fun rookOrBishopThreatens(
 fun triangleKind(a: Double, b: Double, c: Double): Int {
     val m1 = if (a >= b && a >= c) a else if (b >= a && b >= c) b else c
     val m3 = if (a <= b && a <= c) a else if (b <= a && b <= c) b else c
-    val m2 = if (a != m1 && a != m3) a else if (b != m1 && b != m3) b else c
-    if (m1>=m2+m3) return -1
-    else if (m1*m1<m2*m2+m3*m3) return 0
-    else if (m1*m1==m2*m2+m3*m3) return 1
-    return 2
+    val m2 = if ((a == m1 && b == m3) || (b == m1 && a == m3)) c
+    else if ((c == m1 && b == m3) || (b == m1 && c == m3)) a
+    else b
+    if (m1 >= m2 + m3) return -1
+    else if (m1 * m1 < m2 * m2 + m3 * m3) return 0
+    else if (m1 * m1 == m2 * m2 + m3 * m3) return 1
+    else return 2
 }
 
 /**
