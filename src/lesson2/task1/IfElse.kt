@@ -4,6 +4,7 @@ package lesson2.task1
 
 import lesson1.task1.discriminant
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 /**
@@ -64,9 +65,11 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
 fun ageDescription(age: Int): String {
-    if (age % 10 in 5..9 || age % 100 in 11..14 || age % 10 == 0) return "$age лет"
-    else if (age % 10 == 1) return "$age год"
-    return "$age года"
+    return when {
+        age % 10 in 5..9 || age % 100 in 11..14 || age % 10 == 0 -> "$age лет"
+        age % 10 == 1 -> "$age год"
+        else -> "$age года"
+    }
 }
 
 /**
@@ -85,9 +88,11 @@ fun timeForHalfWay(
     val way2 = t2 * v2
     val way3 = t3 * v3
     val halfWay = (way1 + way2 + way3) / 2
-    if (way1 >= halfWay) return halfWay / v1
-    else if (way1 + way2 >= halfWay) return (halfWay - way1) / v2 + t1
-    return t1 + t2 + (halfWay - way1 - way2) / v3
+    return when {
+        way1 >= halfWay -> halfWay / v1
+        way1 + way2 >= halfWay -> (halfWay - way1) / v2 + t1
+        else -> t1 + t2 + (halfWay - way1 - way2) / v3
+    }
 }
 
 /**
@@ -104,10 +109,14 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int {
-    if ((kingX == rookX1 || kingY == rookY1) && (kingX == rookX2 || kingY == rookY2)) return 3
-    else if (kingX == rookX1 || kingY == rookY1) return 1
-    else if (kingX == rookX2 || kingY == rookY2) return 2
-    return 0
+    val kingR1 = kingX == rookX1 || kingY == rookY1
+    val kingR2 = kingX == rookX2 || kingY == rookY2
+    return when {
+        kingR1 && kingR2 -> 3
+        kingR1 -> 1
+        kingR2 -> 2
+        else -> 0
+    }
 }
 
 /**
@@ -125,12 +134,17 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
-    val differenceX = if (kingX > bishopX) kingX - bishopX else bishopX - kingX
-    val differenceY = if (kingY > bishopY) kingY - bishopY else bishopY - kingY
-    if ((kingX == rookX || kingY == rookY) && (differenceX == differenceY)) return 3
-    else if (kingX == rookX || kingY == rookY) return 1
-    else if (differenceX == differenceY) return 2
-    return 0
+
+    val differenceX = max(kingX, bishopX) - min(kingX, bishopX)
+    val differenceY = max(kingY, bishopY) - min(kingY, bishopY)
+    val kingRook = kingX == rookX || kingY == rookY
+    val kingBishop = differenceX == differenceY
+    return when {
+        kingRook && kingBishop -> 3
+        kingRook -> 1
+        kingBishop -> 2
+        else -> 0
+    }
 }
 
 /**
@@ -142,15 +156,19 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val m1 = if (a >= b && a >= c) a else if (b >= a && b >= c) b else c
-    val m3 = if (a <= b && a <= c) a else if (b <= a && b <= c) b else c
-    val m2 = if ((a == m1 && b == m3) || (b == m1 && a == m3)) c
-    else if ((c == m1 && b == m3) || (b == m1 && c == m3)) a
-    else b
-    if (m1 >= m2 + m3) return -1
-    else if (m1 * m1 < m2 * m2 + m3 * m3) return 0
-    else if (m1 * m1 == m2 * m2 + m3 * m3) return 1
-    else return 2
+    val m1 = max(max(a, b), c)
+    val m3 = min(min(a, b), c)
+    val m2 = when {
+        a == m1 && b == m3 || b == m1 && a == m3 -> c
+        c == m1 && b == m3 || b == m1 && c == m3 -> a
+        else -> b
+    }
+    return when {
+        m1 >= m2 + m3 -> -1
+        m1 * m1 < m2 * m2 + m3 * m3 -> 0
+        m1 * m1 == m2 * m2 + m3 * m3 -> 1
+        else -> 2
+    }
 }
 
 /**
@@ -162,10 +180,6 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    if (b < c || a > d) return -1
-    if (b == c || a == d) return 0
-    else if (a <= c && b >= d) return d - c
-    else if (a >= c && b <= d) return b - a
-    else if (a >= c && b >= d && a <= d) return d - a
-    return b - c
+    val s = min(b, d) - max(c, a)
+    return if (s >= 0) s else -1
 }
