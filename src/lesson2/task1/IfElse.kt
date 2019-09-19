@@ -64,13 +64,10 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String {
-    return when {
-        age % 10 in 5..9 || age % 100 in 11..14 || age % 10 == 0 -> "$age лет"
-        age % 10 == 1 -> "$age год"
-        else -> "$age года"
-    }
-}
+fun ageDescription(age: Int): String = when {
+    age % 10 in 5..9 || age % 100 in 11..14 || age % 10 == 0 -> "$age лет"
+    age % 10 == 1 -> "$age год"
+    else -> "$age года"}
 
 /**
  * Простая
@@ -156,8 +153,8 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val m1 = max(max(a, b), c)
-    val m3 = min(min(a, b), c)
+    val m1 = maxOf(a, b, c)
+    val m3 = minOf(a, b, c)
     val m2 = when {
         a == m1 && b == m3 || b == m1 && a == m3 -> c
         c == m1 && b == m3 || b == m1 && c == m3 -> a
