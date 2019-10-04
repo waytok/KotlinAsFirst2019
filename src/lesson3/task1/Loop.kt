@@ -283,7 +283,7 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun sequenceDigit(n: Int, x: (k: Int) -> Int): Int {
+fun sequenceDigit(n: Int, x: (Int) -> Int): Int {
     var k = 0
     var count = 0
     while (count < n) {
@@ -297,10 +297,7 @@ fun sequenceDigit(n: Int, x: (k: Int) -> Int): Int {
 }
 
 
-fun squareSequenceDigit(n: Int): Int {
-    val x = { x: Int -> x * x }
-    return sequenceDigit(n, x)
-}
+fun squareSequenceDigit(n: Int): Int = sequenceDigit(n) { x: Int -> x * x }
 
 /**
  * Сложная
@@ -311,7 +308,5 @@ fun squareSequenceDigit(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int {
-    val x = { x: Int -> fib(x) }
-    return sequenceDigit(n, x)
-}
+fun fibSequenceDigit(n: Int): Int = sequenceDigit(n, ::fib)
+
