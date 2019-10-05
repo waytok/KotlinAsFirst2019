@@ -297,7 +297,7 @@ fun sequenceDigit(n: Int, x: (Int) -> Int): Int {
 }
 
 
-fun squareSequenceDigit(n: Int): Int = sequenceDigit(n) { x: Int -> x * x }
+fun squareSequenceDigit(n: Int): Int = sequenceDigit(n) { x -> x * x }
 
 /**
  * Сложная
