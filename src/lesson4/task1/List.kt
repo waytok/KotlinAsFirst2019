@@ -179,11 +179,11 @@ fun times(a: List<Int>, b: List<Int>): Int {
 fun polynom(p: List<Int>, x: Int): Int {
     if (p.isEmpty()) return 0
     val xVar = x.toDouble()
-    var result = 0.0
+    var result = 0
     for (i in p.indices) {
-        result += p[i] * xVar.pow(i)
+        result += p[i] * xVar.pow(i).toInt()
     }
-    return result.toInt()
+    return result
 }
 
 /**
