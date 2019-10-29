@@ -3,6 +3,7 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
+import lesson3.task1.isPrime
 import kotlin.math.sqrt
 import kotlin.math.pow
 
@@ -116,11 +117,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double {
-    var abs = 0.0
-    for (i in v.indices) abs += v[i] * v[i]
-    return sqrt(abs)
-}
+fun abs(v: List<Double>): Double = sqrt(v.sumByDouble { it * it })
 
 /**
  * Простая
@@ -129,9 +126,7 @@ fun abs(v: List<Double>): Double {
  */
 fun mean(list: List<Double>): Double {
     if (list.isEmpty()) return 0.0
-    var mean = 0.0
-    for (i in list.indices) mean += list[i]
-    return mean / list.size
+    return list.sum() / list.size
 }
 
 /**
@@ -143,12 +138,8 @@ fun mean(list: List<Double>): Double {
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
-    if (list.isNotEmpty()) {
-        val mean = mean(list)
-        for ((i, x) in list.withIndex()) {
-            list[i] = x - mean
-        }
-    }
+    val mean = mean(list)
+    list.replaceAll { it - mean }
     return list
 }
 
@@ -162,9 +153,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
 fun times(a: List<Int>, b: List<Int>): Int {
     if (a.isEmpty() || b.isEmpty()) return 0
     var c = 0
-    for (i in a.indices) {
-        c += a[i] * b[i]
-    }
+    a.forEachIndexed { i, _ -> c += a[i] * b[i] }
     return c
 }
 
@@ -180,9 +169,7 @@ fun polynom(p: List<Int>, x: Int): Int {
     if (p.isEmpty()) return 0
     val xVar = x.toDouble()
     var result = 0
-    for (i in p.indices) {
-        result += p[i] * xVar.pow(i).toInt()
-    }
+    p.forEachIndexed { i, _ -> result += p[i] * xVar.pow(i).toInt() }
     return result
 }
 
@@ -197,12 +184,10 @@ fun polynom(p: List<Int>, x: Int): Int {
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
-    if (list.isNotEmpty()) {
-        var sum = 0
-        for ((i, x) in list.withIndex()) {
-            list[i] += sum
-            sum += x
-        }
+    var sum = 0
+    for ((i, x) in list.withIndex()) {
+        list[i] += sum
+        sum += x
     }
     return list
 }
@@ -215,15 +200,6 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  * Множители в списке должны располагаться по возрастанию.
  */
 
-fun isPrime(n: Int): Boolean {
-    if (n < 2) return false
-    if (n == 2) return true
-    if (n % 2 == 0) return false
-    for (m in 3..sqrt(n.toDouble()).toInt() step 2) {
-        if (n % m == 0) return false
-    }
-    return true
-}
 
 fun factorize(n: Int): List<Int> {
     if (isPrime(n)) return listOf(n)
@@ -245,12 +221,7 @@ fun factorize(n: Int): List<Int> {
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String {
-    val list = factorize(n)
-    var s = list[0].toString()
-    for ((i, x) in list.withIndex()) if (i != 0) s += "*$x"
-    return s
-}
+fun factorizeToString(n: Int): String = factorize(n).joinToString("*")
 
 /**
  * Средняя
@@ -260,14 +231,13 @@ fun factorizeToString(n: Int): String {
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
-    if (n < base) return listOf(n)
-    var list = listOf<Int>()
+    val list = mutableListOf<Int>()
     var nVar = n
     while (nVar != 0) {
-        list = listOf(nVar % base) + list
+        list += nVar % base
         nVar /= base
     }
-    return list
+    return list.reversed()
 }
 
 /**
@@ -283,11 +253,10 @@ fun convert(n: Int, base: Int): List<Int> {
  */
 fun convertToString(n: Int, base: Int): String {
     val list = convert(n, base)
-    val alphabet = "abcdefghijklmnopqrstuvwxyz"
     var s = ""
     for (i in list.indices) {
         if (list[i] <= 9) s += list[i]
-        else s += alphabet[list[i] - 10]
+        else s += ('a' + list[i] - 10)
     }
     return s
 }
@@ -299,12 +268,8 @@ fun convertToString(n: Int, base: Int): String {
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
-fun decimal(digits: List<Int>, base: Int): Int {
-    var x = 0.0
-    val baseDouble = base.toDouble()
-    val k = digits.size
-    for (i in digits.indices) x += digits[i] * baseDouble.pow(k - i - 1)
-    return x.toInt()
+fun decimal(digits: List<Int>, base: Int): Int = digits.foldRightIndexed(0) { i, current, result ->
+    result + current * base.toDouble().pow(digits.size - i - 1).toInt()
 }
 
 /**
@@ -320,9 +285,9 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * (например, str.toInt(base)), запрещается.
  */
 fun decimalFromString(str: String, base: Int): Int {
-    val alphabet = "0123456789abcdefghijklmnopqrstuvwxyz"
     val list: MutableList<Int> = mutableListOf()
-    for (x in str) list += alphabet.indexOf(x)
+    for (x in str) list += if (x in 'a'..'z') x - 'a' + 10
+    else x - '0'
     return decimal(list, base)
 }
 
@@ -336,59 +301,15 @@ fun decimalFromString(str: String, base: Int): Int {
  */
 
 fun roman(n: Int): String {
+    val rom = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
+    val numbers = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
     var nVar = n
     var s = ""
-    while (nVar / 1000 != 0) {
-        s += "M"
-        nVar -= 1000
-    }
-    if (nVar / 900 == 1) {
-        s += "CM"
-        nVar -= 900
-    }
-    if (nVar / 500 == 1) {
-        s += "D"
-        nVar -= 500
-    }
-    if (nVar / 400 == 1) {
-        s += "CD"
-        nVar -= 400
-    }
-    while (nVar / 100 != 0) {
-        s += "C"
-        nVar -= 100
-    }
-    if (nVar / 90 == 1) {
-        s += "XC"
-        nVar -= 90
-    }
-    if (nVar / 50 == 1) {
-        s += "L"
-        nVar -= 50
-    }
-    if (nVar / 40 == 1) {
-        s += "XL"
-        nVar -= 40
-    }
-    while (nVar / 10 != 0) {
-        s += "X"
-        nVar -= 10
-    }
-    if (nVar / 9 == 1) {
-        s += "IX"
-        nVar -= 9
-    }
-    if (nVar / 5 == 1) {
-        s += "V"
-        nVar -= 5
-    }
-    if (nVar / 4 == 1) {
-        s += "IV"
-        nVar -= 4
-    }
-    while (nVar != 0) {
-        s += "I"
-        nVar -= 1
+    for (i in rom.indices) {
+        while (nVar / numbers[i] != 0) {
+            s += rom[i]
+            nVar -= numbers[i]
+        }
     }
     return s
 }
