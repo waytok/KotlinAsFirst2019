@@ -151,7 +151,6 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
 fun times(a: List<Int>, b: List<Int>): Int {
-    if (a.isEmpty() || b.isEmpty()) return 0
     var c = 0
     a.forEachIndexed { i, _ -> c += a[i] * b[i] }
     return c
@@ -286,7 +285,7 @@ fun decimal(digits: List<Int>, base: Int): Int = digits.foldRightIndexed(0) { i,
  * (например, str.toInt(base)), запрещается.
  */
 fun decimalFromString(str: String, base: Int): Int {
-    val list: MutableList<Int> = mutableListOf()
+    val list = mutableListOf<Int>()
     for (x in str) list += if (x in 'a'..'z') x - 'a' + 10
     else x - '0'
     return decimal(list, base)
