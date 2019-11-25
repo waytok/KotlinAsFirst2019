@@ -203,8 +203,7 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
     if (stuff.values.find { it.first == kind } == null) return null
-    val stuffFiltered = stuff.filter { it.value.first == kind }
-    stuffFiltered.values.sortedByDescending { it.second }
+    val stuffFiltered = stuff.filter { it.value.first == kind }.toSortedMap(compareBy { (stuff[it] ?: error("")).second })
     return stuffFiltered.keys.first()
 }
 
