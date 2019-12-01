@@ -219,8 +219,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     val wordUpper = word.toUpperCase()
-    val charsUpper = chars.joinToString().toUpperCase()
-    for (i in wordUpper) if (i !in charsUpper || !i.isLetter()) return false
+    val charsUpper = chars.joinToString(separator = "").toUpperCase()
+    for (i in wordUpper) if (i !in charsUpper) return false
     return true
 }
 
