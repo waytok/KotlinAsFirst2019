@@ -40,7 +40,29 @@ data class HexPoint(val x: Int, val y: Int) {
      * Расстояние вычисляется как число единичных отрезков в пути между двумя гексами.
      * Например, путь межу гексами 16 и 41 (см. выше) может проходить через 25, 34, 43 и 42 и имеет длину 5.
      */
-    fun distance(other: HexPoint): Int = max(abs(other.x - x), abs(other.y - y))
+    fun distance(other: HexPoint): Int {
+        var currentPoint = HexPoint(x, y)
+        var currentDistance = 0
+        while (currentPoint != other) {
+            when {
+                (currentPoint.x < other.x && currentPoint.y <= other.y) -> currentPoint =
+                    HexPoint(currentPoint.x + 1, currentPoint.y)
+                (currentPoint.x > other.x && currentPoint.y >= other.y) -> currentPoint =
+                    HexPoint(currentPoint.x - 1, currentPoint.y)
+                (currentPoint.x == other.x && currentPoint.y < other.y) -> currentPoint =
+                    HexPoint(currentPoint.x, currentPoint.y + 1)
+                (currentPoint.x == other.x && currentPoint.y > other.y) -> currentPoint =
+                    HexPoint(currentPoint.x, currentPoint.y - 1)
+                (currentPoint.x > other.x && currentPoint.y < other.y) -> currentPoint =
+                    HexPoint(currentPoint.x - 1, currentPoint.y + 1)
+                (currentPoint.x < other.x && currentPoint.y > other.y) -> currentPoint =
+                    HexPoint(currentPoint.x + 1, currentPoint.y - 1)
+
+            }
+            currentDistance += 1
+        }
+        return currentDistance
+    }
 
     override fun toString(): String = "$y.$x"
 }
@@ -63,7 +85,7 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * и другим шестиугольником B с центром в 26 и радиуоом 2 равно 2
      * (расстояние между точками 32 и 24)
      */
-    fun distance(other: Hexagon): Int = other.center.distance(center) - other.radius - radius
+    fun distance(other: Hexagon): Int = abs(other.center.distance(center) - other.radius - radius)
 
     /**
      * Тривиальная
@@ -180,18 +202,25 @@ fun HexPoint.move(direction: Direction, distance: Int): HexPoint = TODO()
  *     )
  */
 fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
-    val points = mutableListOf<HexPoint>()
+    val points = mutableListOf(from)
     var currentPoint = from
     while (currentPoint != to) {
-        points.add(currentPoint)
         when {
-            currentPoint.x < to.x -> currentPoint = HexPoint(currentPoint.x + 1, currentPoint.y)
-            currentPoint.y < to.y -> currentPoint = HexPoint(currentPoint.x, currentPoint.y + 1)
-            currentPoint.x > to.x -> currentPoint = HexPoint(currentPoint.x - 1, currentPoint.y)
-            currentPoint.y > to.y -> currentPoint = HexPoint(currentPoint.x, currentPoint.y - 1)
+            (currentPoint.x < to.x && currentPoint.y <= to.y) -> currentPoint =
+                HexPoint(currentPoint.x + 1, currentPoint.y)
+            (currentPoint.x > to.x && currentPoint.y >= to.y) -> currentPoint =
+                HexPoint(currentPoint.x - 1, currentPoint.y)
+            (currentPoint.x == to.x && currentPoint.y < to.y) -> currentPoint =
+                HexPoint(currentPoint.x, currentPoint.y + 1)
+            (currentPoint.x == to.x && currentPoint.y > to.y) -> currentPoint =
+                HexPoint(currentPoint.x, currentPoint.y - 1)
+            (currentPoint.x > to.x && currentPoint.y < to.y) -> currentPoint =
+                HexPoint(currentPoint.x - 1, currentPoint.y + 1)
+            (currentPoint.x < to.x && currentPoint.y > to.y) -> currentPoint =
+                HexPoint(currentPoint.x + 1, currentPoint.y - 1)
         }
+        points.add(currentPoint)
     }
-    points.add(currentPoint)
     return points
 }
 
