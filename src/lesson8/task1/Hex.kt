@@ -2,6 +2,10 @@
 
 package lesson8.task1
 
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.abs
+
 /**
  * Точка (гекс) на шестиугольной сетке.
  * Координаты заданы как в примере (первая цифра - y, вторая цифра - x)
@@ -36,7 +40,7 @@ data class HexPoint(val x: Int, val y: Int) {
      * Расстояние вычисляется как число единичных отрезков в пути между двумя гексами.
      * Например, путь межу гексами 16 и 41 (см. выше) может проходить через 25, 34, 43 и 42 и имеет длину 5.
      */
-    fun distance(other: HexPoint): Int = TODO()
+    fun distance(other: HexPoint): Int = max(abs(other.x - x), abs(other.y - y))
 
     override fun toString(): String = "$y.$x"
 }
@@ -59,11 +63,11 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * и другим шестиугольником B с центром в 26 и радиуоом 2 равно 2
      * (расстояние между точками 32 и 24)
      */
-    fun distance(other: Hexagon): Int = TODO()
+    fun distance(other: Hexagon): Int = other.center.distance(center) - other.radius - radius
 
     /**
      * Тривиальная
-     *
+     *,
      * Вернуть true, если заданная точка находится внутри или на границе шестиугольника
      */
     fun contains(point: HexPoint): Boolean = TODO()
@@ -175,7 +179,21 @@ fun HexPoint.move(direction: Direction, distance: Int): HexPoint = TODO()
  *       HexPoint(y = 5, x = 3)
  *     )
  */
-fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> = TODO()
+fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
+    val points = mutableListOf<HexPoint>()
+    var currentPoint = from
+    while (currentPoint != to) {
+        points.add(currentPoint)
+        when {
+            currentPoint.x < to.x -> currentPoint = HexPoint(currentPoint.x + 1, currentPoint.y)
+            currentPoint.y < to.y -> currentPoint = HexPoint(currentPoint.x, currentPoint.y + 1)
+            currentPoint.x > to.x -> currentPoint = HexPoint(currentPoint.x - 1, currentPoint.y)
+            currentPoint.y > to.y -> currentPoint = HexPoint(currentPoint.x, currentPoint.y - 1)
+        }
+    }
+    points.add(currentPoint)
+    return points
+}
 
 /**
  * Очень сложная
