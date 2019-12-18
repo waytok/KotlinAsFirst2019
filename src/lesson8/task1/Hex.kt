@@ -88,7 +88,6 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
     fun distance(other: Hexagon): Int {
         val min = other.center.distance(center)
         if (min >= other.radius + radius) return min - (other.radius + radius)
-        if (min < max(radius, other.radius)) return max(radius, other.radius) - min - min(radius, other.radius)
         return 0
     }
 
